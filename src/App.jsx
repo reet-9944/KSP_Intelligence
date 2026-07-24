@@ -23,7 +23,6 @@ function App() {
     setUserRole('');
   };
 
-  // Protected Route wrapper
   const ProtectedRoute = ({ children }) => {
     if (!isAuthenticated) {
       return <Navigate to="/login" replace />;
@@ -38,12 +37,12 @@ function App() {
         <main className="main-content">
           <Routes>
             <Route path="/login" element={<Login onLogin={handleLogin} />} />
-            <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-            <Route path="/geospatial" element={<ProtectedRoute><Geospatial /></ProtectedRoute>} />
-            <Route path="/network" element={<ProtectedRoute><Network /></ProtectedRoute>} />
-            <Route path="/predictive" element={<ProtectedRoute><Predictive /></ProtectedRoute>} />
-            <Route path="/ai" element={<ProtectedRoute><InvestigatorAI /></ProtectedRoute>} />
-            <Route path="/offender" element={<ProtectedRoute><OffenderProfile /></ProtectedRoute>} />
+            <Route path="/" element={<ProtectedRoute><Home userRole={userRole} /></ProtectedRoute>} />
+            <Route path="/geospatial" element={<ProtectedRoute><Geospatial userRole={userRole} /></ProtectedRoute>} />
+            <Route path="/network" element={<ProtectedRoute><Network userRole={userRole} /></ProtectedRoute>} />
+            <Route path="/predictive" element={<ProtectedRoute><Predictive userRole={userRole} /></ProtectedRoute>} />
+            <Route path="/ai" element={<ProtectedRoute><InvestigatorAI userRole={userRole} /></ProtectedRoute>} />
+            <Route path="/offender" element={<ProtectedRoute><OffenderProfile userRole={userRole} /></ProtectedRoute>} />
           </Routes>
         </main>
       </div>

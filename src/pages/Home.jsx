@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Map, Share2, TrendingUp, Bot, ArrowRight, ShieldAlert } from 'lucide-react';
 import './Home.css';
 
-const Home = () => {
+const Home = ({ userRole }) => {
   const navigate = useNavigate();
   const observerRef = useRef(null);
 
@@ -30,17 +30,28 @@ const Home = () => {
     };
   }, []);
 
+  const getRoleGreeting = () => {
+    switch(userRole) {
+      case 'Investigator': return "Tactical Field Operations & Active Case Tracking.";
+      case 'Analyst': return "Deep-Dive Link Analysis & Data Correlation Hub.";
+      case 'Supervisor': return "Resource Deployment & Zone Command Overview.";
+      case 'Policymaker': return "State-wide Macro Trends & Policy Impact Dashboards.";
+      default: return "Moving beyond manual records to an AI-driven, proactive policing ecosystem.";
+    }
+  };
+
   return (
     <div className="home-container">
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-content animate-fade-in">
-          <div className="badge"><ShieldAlert size={16} className="badge-icon"/> KSP Official Platform</div>
+          <div className="badge"><ShieldAlert size={16} className="badge-icon"/> {userRole} Portal</div>
           <h1 className="hero-title">
             Next-Gen <span className="text-gradient">Crime Intelligence</span> & Analytics
           </h1>
           <p className="hero-subtitle">
-            Moving beyond manual records to an AI-driven, proactive policing ecosystem. 
+            {getRoleGreeting()}
+            <br/><br/>
             Discover hidden patterns, map criminal networks, and predict emerging trends with state-of-the-art visualization.
           </p>
           <div className="hero-actions">
@@ -59,64 +70,33 @@ const Home = () => {
       {/* Scrolling Info Sections */}
       <section className="info-section">
         <div className="container">
-          <h2 className="section-title fade-in-section text-center">Core Capabilities</h2>
+          <h2 className="section-title fade-in-section text-center">Core Capabilities for {userRole}s</h2>
           
           <div className="feature-grid">
-            {/* Feature 1 */}
             <div className="feature-card glass-panel fade-in-section" onClick={() => navigate('/geospatial')}>
-              <div className="feature-icon-wrapper geo">
-                <Map size={32} />
-              </div>
+              <div className="feature-icon-wrapper geo"><Map size={32} /></div>
               <h3>Geospatial Intelligence</h3>
-              <p>
-                Interactive maps replacing static sheets. Visualize crime patterns, identify spatiotemporal clusters (hotspots), and receive emerging trend alerts with district-level drill-downs.
-              </p>
+              <p>Interactive maps for visualizing crime patterns, hotspots, and district-level alerts tailored to your jurisdiction.</p>
             </div>
 
-            {/* Feature 2 */}
             <div className="feature-card glass-panel fade-in-section" onClick={() => navigate('/network')}>
-              <div className="feature-icon-wrapper network">
-                <Share2 size={32} />
-              </div>
+              <div className="feature-icon-wrapper network"><Share2 size={32} /></div>
               <h3>Network & Link Analysis</h3>
-              <p>
-                Visually connect fragmented data points. Uncover organized crime structures, track repeat offenders, and detect hidden associations across multiple jurisdictions.
-              </p>
+              <p>Uncover organized crime structures and detect hidden financial associations across jurisdictions.</p>
             </div>
 
-            {/* Feature 3 */}
             <div className="feature-card glass-panel fade-in-section" onClick={() => navigate('/predictive')}>
-              <div className="feature-icon-wrapper predictive">
-                <TrendingUp size={32} />
-              </div>
+              <div className="feature-icon-wrapper predictive"><TrendingUp size={32} /></div>
               <h3>Predictive Analytics</h3>
-              <p>
-                Move from reactive to proactive. Overlay socio-economic data for predictive risk scoring, and utilize AI for anomaly detection in behavioral patterns.
-              </p>
+              <p>Move from reactive to proactive with socio-economic data forecasting and AI anomaly detection.</p>
             </div>
 
-            {/* Feature 4 */}
             <div className="feature-card glass-panel fade-in-section" onClick={() => navigate('/ai')}>
-              <div className="feature-icon-wrapper ai">
-                <Bot size={32} />
-              </div>
+              <div className="feature-icon-wrapper ai"><Bot size={32} /></div>
               <h3>AI Investigator Chatbot</h3>
-              <p>
-                Natural language queries to rapidly extract insights. Generate AI case summaries, find similar historical cases (MO matching), and export tactical PDF reports.
-              </p>
+              <p>Natural language queries to rapidly extract insights, find similar historical cases, and export tactical reports.</p>
             </div>
           </div>
-        </div>
-      </section>
-      
-      {/* Footer CTA */}
-      <section className="cta-section fade-in-section">
-        <div className="cta-box glass-panel text-center">
-          <h2>Ready to analyze real-time data?</h2>
-          <p>Access the unified database for state-wide comprehensive analysis.</p>
-          <button className="btn-primary" style={{marginTop: '20px'}} onClick={() => navigate('/ai')}>
-            Start AI Chat <Bot size={18} />
-          </button>
         </div>
       </section>
     </div>

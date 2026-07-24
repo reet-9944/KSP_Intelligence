@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Bot, User, Send, FileText, Mic, Globe } from 'lucide-react';
+import { Bot, User, Send, FileText, Mic, Globe, Info } from 'lucide-react';
 import './PageStyles.css';
 
-const InvestigatorAI = () => {
+const InvestigatorAI = ({ userRole }) => {
   const [messages, setMessages] = useState([
-    { sender: 'bot', text: 'Welcome to the KSP Intelligence Hub. I am your AI assistant. You can ask me to summarize case files, detect similar historical cases, or query the database in natural language.' }
+    { sender: 'bot', text: `Welcome to the KSP Intelligence Hub, ${userRole}. I am your AI assistant. You can ask me to summarize case files, detect similar historical cases, or query the database in natural language.` }
   ]);
   const [input, setInput] = useState('');
   const [language, setLanguage] = useState('EN');
@@ -20,7 +20,11 @@ const InvestigatorAI = () => {
     setTimeout(() => {
       let botMsg = { sender: 'bot', text: 'Processing query through AI engine...' };
       
-      if (userMsg.text.toLowerCase().includes('summarize') || userMsg.text.toLowerCase().includes('ಸಾರಾಂಶ')) {
+      const query = userMsg.text.toLowerCase();
+      
+      if (userRole === 'Policymaker' && (query.includes('trend') || query.includes('report'))) {
+        botMsg.text = "Based on macro analysis, property crimes are up 12% in the South Zone, correlating with rapid urbanization. Do you want the full policy impact report?";
+      } else if (query.includes('summarize') || query.includes('ಸಾರಾಂಶ')) {
         botMsg.text = language === 'EN' 
           ? "Based on FIR #1029, the incident involves a two-wheeler theft at 23:00 near Indiranagar Metro. The suspects used a master key. This MO matches 3 other recent cases in the East Zone."
           : "ಎಫ್‌ಐಆರ್ # 1029 ರ ಆಧಾರದ ಮೇಲೆ, ಇಂದಿರಾನಗರ ಮೆಟ್ರೋ ಬಳಿ 23:00 ಗಂಟೆಗೆ ದ್ವಿಚಕ್ರ ವಾಹನ ಕಳ್ಳತನ ನಡೆದಿದೆ. ಇದು ಪೂರ್ವ ವಲಯದ ಇತ್ತೀಚಿನ 3 ಪ್ರಕರಣಗಳಿಗೆ ಹೊಂದಿಕೆಯಾಗುತ್ತದೆ.";
@@ -46,9 +50,9 @@ const InvestigatorAI = () => {
 
   return (
     <div className="page-container animate-fade-in">
-      <div className="page-header" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+      <div className="page-header" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px'}}>
         <div>
-          <h1 className="page-title">Investigator AI Chatbot</h1>
+          <h1 className="page-title">{userRole === 'Policymaker' ? 'AI Policy Assistant' : 'Investigator AI Chatbot'}</h1>
           <p className="page-subtitle">Natural language interface for complex database queries, case summaries, and reporting.</p>
         </div>
         <div style={{display: 'flex', gap: '12px'}}>
@@ -63,7 +67,10 @@ const InvestigatorAI = () => {
       </div>
 
       <div className="glass-panel chat-window">
-        <div className="network-controls" style={{justifyContent: 'flex-end', background: 'rgba(0,0,0,0.2)'}}>
+        <div className="network-controls" style={{justifyContent: 'space-between', background: 'rgba(0,0,0,0.2)'}}>
+           <div style={{display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.85rem'}}>
+             <Info size={16} /> Context: {userRole} Access
+           </div>
           <button className="btn-primary" style={{padding: '8px 16px', fontSize: '0.85rem', background: 'var(--accent)', borderColor: 'var(--accent)', color: 'white'}}>
             <FileText size={16} /> Export Conversation History (PDF)
           </button>
@@ -74,7 +81,7 @@ const InvestigatorAI = () => {
             <div key={idx} className={`message ${msg.sender}`}>
               <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: msg.sender === 'bot' ? 'var(--primary)' : 'var(--text-main)', fontSize: '0.85rem', fontWeight: 600}}>
                 {msg.sender === 'bot' ? <Bot size={16}/> : <User size={16}/>}
-                {msg.sender === 'bot' ? 'KSP Intelligence' : 'Investigator'}
+                {msg.sender === 'bot' ? 'KSP Intelligence' : userRole}
               </div>
               <div style={{lineHeight: 1.6}}>{msg.text}</div>
             </div>
