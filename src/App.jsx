@@ -11,7 +11,7 @@ import OffenderProfile from './pages/OffenderProfile';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState('');
+  const [userRole, setUserRole] = useState(''); // Default empty until logged in
 
   const handleLogin = (role) => {
     setIsAuthenticated(true);
@@ -23,10 +23,18 @@ function App() {
     setUserRole('');
   };
 
+  // Basic Route Protection
   const ProtectedRoute = ({ children }) => {
     if (!isAuthenticated) {
       return <Navigate to="/login" replace />;
     }
+    return children;
+  };
+
+  // Role-Based Route Protection (Prevents manual URL typing access)
+  const RoleProtectedRoute = ({ children, allowedRoles }) => {
+    if (!isAuthenticated) return <Navigate to="/login" replace />;
+    if (!allowedRoles.includes(userRole)) return <Navigate to="/" replace />;
     return children;
   };
 
@@ -37,12 +45,38 @@ function App() {
         <main className="main-content">
           <Routes>
             <Route path="/login" element={<Login onLogin={handleLogin} />} />
+            
             <Route path="/" element={<ProtectedRoute><Home userRole={userRole} /></ProtectedRoute>} />
-            <Route path="/geospatial" element={<ProtectedRoute><Geospatial userRole={userRole} /></ProtectedRoute>} />
-            <Route path="/network" element={<ProtectedRoute><Network userRole={userRole} /></ProtectedRoute>} />
-            <Route path="/predictive" element={<ProtectedRoute><Predictive userRole={userRole} /></ProtectedRoute>} />
-            <Route path="/ai" element={<ProtectedRoute><InvestigatorAI userRole={userRole} /></ProtectedRoute>} />
-            <Route path="/offender" element={<ProtectedRoute><OffenderProfile userRole={userRole} /></ProtectedRoute>} />
+            
+            <Route path="/geospatial" element={
+              <RoleProtectedRoute allowedRoles={['Investigator', 'Analyst', 'Supervisor']}>
+                <Geospatial userRole={userRole} />
+              </RoleProtectedRoute>
+            } />
+            
+            <Route path="/network" element={
+              <RoleProtectedRoute allowedRoles={['Analyst']}>
+                <Network userRole={userRole} />
+              </RoleProtectedRoute>
+            } />
+            
+            <Route path="/predictive" element={
+              <RoleProtectedRoute allowedRoles={['Analyst', 'Supervisor', 'Policymaker']}>
+                <Predictive userRole={userRole} />
+              </RoleProtectedRoute>
+            } />
+            
+            <Route path="/ai" element={
+              <RoleProtectedRoute allowedRoles={['Investigator', 'Analyst', 'Policymaker']}>
+                <InvestigatorAI userRole={userRole} />
+              </RoleProtectedRoute>
+            } />
+            
+            <Route path="/offender" element={
+              <RoleProtectedRoute allowedRoles={['Investigator', 'Analyst', 'Supervisor']}>
+                <OffenderProfile userRole={userRole} />
+              </RoleProtectedRoute>
+            } />
           </Routes>
         </main>
       </div>
