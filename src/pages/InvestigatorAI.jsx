@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Bot, User, Send, FileText, Mic, Globe, Info } from 'lucide-react';
 import './PageStyles.css';
+import { queryDatabase } from '../data/mockDatabase';
 
 const InvestigatorAI = ({ userRole }) => {
   const [messages, setMessages] = useState([
@@ -10,6 +11,17 @@ const InvestigatorAI = ({ userRole }) => {
   const [language, setLanguage] = useState('EN');
   const [isRecording, setIsRecording] = useState(false);
 
+  // Simulated live alert
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMessages(prev => [...prev, { 
+        sender: 'bot', 
+        text: '🚨 [LIVE ALERT] Anomaly detected: Multiple Vehicle Thefts reported in East Zone within the last 30 minutes. Dispatching patrol recommendations.' 
+      }]);
+    }, 15000);
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleSend = () => {
     if (!input.trim()) return;
     
@@ -18,24 +30,20 @@ const InvestigatorAI = ({ userRole }) => {
     setInput('');
 
     setTimeout(() => {
-      let botMsg = { sender: 'bot', text: 'Processing query through AI engine...' };
-      
+      let botMsg = { sender: 'bot', text: '' };
       const query = userMsg.text.toLowerCase();
       
       if (userRole === 'Policymaker' && (query.includes('trend') || query.includes('report'))) {
         botMsg.text = "Based on macro analysis, property crimes are up 12% in the South Zone, correlating with rapid urbanization. Do you want the full policy impact report?";
-      } else if (query.includes('summarize') || query.includes('ಸಾರಾಂಶ')) {
-        botMsg.text = language === 'EN' 
-          ? "Based on FIR #1029, the incident involves a two-wheeler theft at 23:00 near Indiranagar Metro. The suspects used a master key. This MO matches 3 other recent cases in the East Zone."
-          : "ಎಫ್‌ಐಆರ್ # 1029 ರ ಆಧಾರದ ಮೇಲೆ, ಇಂದಿರಾನಗರ ಮೆಟ್ರೋ ಬಳಿ 23:00 ಗಂಟೆಗೆ ದ್ವಿಚಕ್ರ ವಾಹನ ಕಳ್ಳತನ ನಡೆದಿದೆ. ಇದು ಪೂರ್ವ ವಲಯದ ಇತ್ತೀಚಿನ 3 ಪ್ರಕರಣಗಳಿಗೆ ಹೊಂದಿಕೆಯಾಗುತ್ತದೆ.";
+      } else if (query.includes('ಸಾರಾಂಶ')) {
+        botMsg.text = "ಎಫ್‌ಐಆರ್ # 1029 ರ ಆಧಾರದ ಮೇಲೆ, ಇಂದಿರಾನಗರ ಮೆಟ್ರೋ ಬಳಿ 23:00 ಗಂಟೆಗೆ ದ್ವಿಚಕ್ರ ವಾಹನ ಕಳ್ಳತನ ನಡೆದಿದೆ. ಇದು ಪೂರ್ವ ವಲಯದ ಇತ್ತೀಚಿನ 3 ಪ್ರಕರಣಗಳಿಗೆ ಹೊಂದಿಕೆಯಾಗುತ್ತದೆ.";
       } else {
-        botMsg.text = language === 'EN'
-          ? "I have queried the database. Found 14 related records. Would you like me to export these as a Tactical PDF Report?"
-          : "ನಾನು ಡೇಟಾಬೇಸ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿದ್ದೇನೆ. 14 ಸಂಬಂಧಿತ ದಾಖಲೆಗಳು ಕಂಡುಬಂದಿವೆ. ನೀವು ಇದನ್ನು PDF ಆಗಿ ರಫ್ತು ಮಾಡಲು ಬಯಸುವಿರಾ?";
+        // Use the actual mock database query engine!
+        botMsg.text = queryDatabase(query);
       }
 
       setMessages(prev => [...prev, botMsg]);
-    }, 1000);
+    }, 800);
   };
 
   const toggleVoice = () => {
@@ -43,7 +51,7 @@ const InvestigatorAI = ({ userRole }) => {
     if (!isRecording) {
       setTimeout(() => {
         setIsRecording(false);
-        setInput(language === 'EN' ? 'Summarize the latest vehicle theft in Indiranagar.' : 'ಇಂದಿರಾನಗರದಲ್ಲಿ ಇತ್ತೀಚಿನ ವಾಹನ ಕಳ್ಳತನದ ಸಾರಾಂಶ ನೀಡಿ.');
+        setInput(language === 'EN' ? 'Summarize vehicle thefts' : 'ವಾಹನ ಕಳ್ಳತನದ ಸಾರಾಂಶ ನೀಡಿ');
       }, 2000);
     }
   };
@@ -69,7 +77,7 @@ const InvestigatorAI = ({ userRole }) => {
       <div className="glass-panel chat-window">
         <div className="network-controls" style={{justifyContent: 'space-between', background: 'rgba(0,0,0,0.2)'}}>
            <div style={{display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.85rem'}}>
-             <Info size={16} /> Context: {userRole} Access
+             <Info size={16} /> Context: {userRole} Access | Connected to Live DB
            </div>
           <button className="btn-primary" style={{padding: '8px 16px', fontSize: '0.85rem', background: 'var(--accent)', borderColor: 'var(--accent)', color: 'white'}}>
             <FileText size={16} /> Export Conversation History (PDF)
@@ -99,7 +107,7 @@ const InvestigatorAI = ({ userRole }) => {
           <input 
             type="text" 
             className="chat-input" 
-            placeholder={language === 'EN' ? "Type your query here..." : "ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಇಲ್ಲಿ ಟೈಪ್ ಮಾಡಿ..."}
+            placeholder={language === 'EN' ? "Try: 'Summarize vehicle thefts' or 'Where does Rajendra operate?'" : "ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಇಲ್ಲಿ ಟೈಪ್ ಮಾಡಿ..."}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
