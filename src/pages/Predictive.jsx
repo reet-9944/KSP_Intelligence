@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -11,7 +11,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Line, Bar } from 'react-chartjs-2';
-import { AlertTriangle, Activity } from 'lucide-react';
+import { AlertTriangle, Activity, Info } from 'lucide-react';
 import './PageStyles.css';
 
 ChartJS.register(
@@ -26,6 +26,8 @@ ChartJS.register(
 );
 
 const Predictive = () => {
+  const [showExplanation, setShowExplanation] = useState(false);
+
   const lineOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -76,20 +78,43 @@ const Predictive = () => {
 
   return (
     <div className="page-container animate-fade-in">
-      <div className="page-header">
-        <h1 className="page-title">Predictive Analytics</h1>
-        <p className="page-subtitle">AI-driven forecasts and socio-economic risk scoring for proactive resource allocation.</p>
+      <div className="page-header" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'}}>
+        <div>
+          <h1 className="page-title">Predictive & Sociological Analytics</h1>
+          <p className="page-subtitle">AI-driven forecasts and socio-economic risk scoring for proactive resource allocation.</p>
+        </div>
       </div>
 
       <div className="dashboard-grid">
         {/* Trend Prediction */}
-        <div className="glass-panel chart-card">
-          <h3 style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-            <Activity size={20} color="var(--primary)" /> Emerging Crime Trends
-          </h3>
+        <div className="glass-panel chart-card" style={{position: 'relative'}}>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <h3 style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+              <Activity size={20} color="var(--primary)" /> Emerging Crime Trends
+            </h3>
+            <button 
+              onClick={() => setShowExplanation(!showExplanation)}
+              className="btn-primary" 
+              style={{padding: '4px 12px', fontSize: '0.8rem', background: 'transparent', borderColor: 'var(--border-glass)'}}
+            >
+              <Info size={14} /> Explain AI
+            </button>
+          </div>
           <p style={{color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '16px'}}>
             Forecasted spikes based on hidden correlations and seasonal data.
           </p>
+
+          {showExplanation && (
+            <div className="glass-panel" style={{position: 'absolute', top: '70px', right: '24px', zIndex: 10, padding: '16px', maxWidth: '300px', border: '1px solid var(--primary)', background: 'var(--bg-darker)'}}>
+              <h4 style={{color: 'var(--primary)', marginBottom: '8px', fontSize: '0.9rem'}}>AI Reasoning Trail</h4>
+              <ul style={{fontSize: '0.8rem', color: 'var(--text-main)', paddingLeft: '16px', margin: 0, display: 'flex', flexDirection: 'column', gap: '8px'}}>
+                <li><strong>Correlation 1:</strong> 42% increase in urbanization migration to South Zone (Census Data).</li>
+                <li><strong>Correlation 2:</strong> Economic stress indicators spiked in May (Jobless claims).</li>
+                <li><strong>Historical Pattern:</strong> Summer months historically show a 15% baseline increase in property crimes.</li>
+              </ul>
+            </div>
+          )}
+
           <div className="chart-wrapper">
             <Line options={lineOptions} data={trendData} />
           </div>
@@ -97,9 +122,11 @@ const Predictive = () => {
 
         {/* Risk Scoring */}
         <div className="glass-panel chart-card">
-          <h3 style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-            <AlertTriangle size={20} color="var(--accent)" /> High-Risk Zone Analysis
-          </h3>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <h3 style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+              <AlertTriangle size={20} color="var(--accent)" /> High-Risk Zone Analysis
+            </h3>
+          </div>
           <p style={{color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '16px'}}>
             Zones with high probability of clustered incidents within 48 hours.
           </p>
